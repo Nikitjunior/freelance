@@ -1,4 +1,5 @@
-from flask import Flask
+from flask import Flask, render_template
+
 from data import db_session
 
 
@@ -8,7 +9,7 @@ app.config['SECRET_KEY'] = '12qasdj6'
 
 @app.route("/")
 def index():
-    return ""
+    return render_template('base.html', title='TalentHarbor')
 
 
 def main():
