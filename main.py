@@ -104,6 +104,11 @@ def profile():
         return render_template('profile.html', title='Профиль', data=data)
 
 
+@app.route("/orders")
+def orders():
+    return render_template("orders.html", title="Заказы")
+
+
 def main():
     db_session.global_init("db/freelance.db")
     app.run()
