@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block content %}
+<link rel="stylesheet" href="static/css/profile_style.css">
+<div class="main">
+    {% if current_user.is_authenticated %}
+        <div class='column-1'>
+            <h1>Ваш профиль:</h1>
+            <div class="profile_image">
+                <img src="static/images/profile.png" alt="" width='300'>
+            </div>
+        </div>
+        <div class='column-2'>
+            <div class="prof_info">
+                <h2 style="margin-bottom: 20px;">Имя: {{ data.name }}</h2>
+                <h2 style="margin-bottom: 20px;">Фамилия: {{ data.surname }}</h2>
+                <h2 style="margin-bottom: 20px;">Номер телефона: {{ data.phone_number }}</h2>
+                <h2 style="margin-bottom: 20px;">Электронная почта: {{ data.email }}</h2>
+                <a class="btn btn-danger btn-lg" href="/logout">Выйти</a>
+            </div>
+        </div>
+    {% else %}
+        <p>
+            <a class="btn btn-primary " href="/register">Зарегистрироваться</a>
+            <a class="btn btn-success" href="/login">Войти</a>
+        </p>
+    {% endif %}
+</div>
+
+{% endblock %}

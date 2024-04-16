@@ -2,9 +2,9 @@ from flask import Flask, render_template, redirect
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user
 
 from data import db_session
-from data.users import User
-from data.register_form import RegisterForm
 from data.login_form import LoginForm
+from data.register_form import RegisterForm
+from data.users import User
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = '12qasdj6'
@@ -71,6 +71,20 @@ def reqister():
         db_sess.commit()
         return redirect('/')
     return render_template('register.html', title='Регистрация', form=form)
+
+
+@app.route('/profile', methods=['GET', 'POST'])
+def profile():
+    try:
+        data = {
+            "name": current_user.name,
+            "surname": current_user.surname,
+            "phone_number": current_user.phone_number,
+            "email": current_user.email
+        }
+    except AttributeError:
+        data = {}
+    return render_template('profile.html', title='Профиль', data=data)
 
 
 def main():

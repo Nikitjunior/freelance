@@ -1,0 +1,9 @@
+.main{
+    height: 800px;
+    display: flex
+}
+
+.column-2{
+    margin-left: 100px;
+    margin-top: 50px;
+}

@@ -58,3 +58,16 @@ footer {
     text-align: center;
     padding: 10px 0;
 }
+
+.container1{
+    display: flex
+}
+
+nav {
+    margin-left: 400px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 60px;
+}
+
