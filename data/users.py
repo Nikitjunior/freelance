@@ -4,6 +4,9 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from sqlalchemy_serializer import SerializerMixin
 from flask_login import UserMixin
 
+from PIL import Image
+from io import BytesIO
+
 
 class User(SqlAlchemyBase, UserMixin, SerializerMixin):
     __tablename__ = 'users'
@@ -14,6 +17,7 @@ class User(SqlAlchemyBase, UserMixin, SerializerMixin):
     speciality = sqlalchemy.Column(sqlalchemy.String)
     email = sqlalchemy.Column(sqlalchemy.String, unique=True)
     phone_number = sqlalchemy.Column(sqlalchemy.String, unique=True)
+    image_data = sqlalchemy.Column(sqlalchemy.LargeBinary)
     hashed_password = sqlalchemy.Column(sqlalchemy.String)
 
     def __repr__(self):

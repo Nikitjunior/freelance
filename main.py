@@ -1,10 +1,13 @@
-from flask import Flask, render_template, redirect
+from flask import Flask, render_template, redirect, request
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user
 
 from data import db_session
 from data.login_form import LoginForm
 from data.register_form import RegisterForm
 from data.users import User
+
+from PIL import Image, ImageDraw
+from io import BytesIO
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = '12qasdj6'
@@ -75,16 +78,30 @@ def reqister():
 
 @app.route('/profile', methods=['GET', 'POST'])
 def profile():
-    try:
-        data = {
-            "name": current_user.name,
-            "surname": current_user.surname,
-            "phone_number": current_user.phone_number,
-            "email": current_user.email
-        }
-    except AttributeError:
-        data = {}
-    return render_template('profile.html', title='Профиль', data=data)
+    if request.method == 'POST':
+        f = request.files['file']
+
+        db_sess = db_session.create_session()
+        user_id = current_user.id
+        user = db_sess.query(User).get(user_id)
+        user.image_data = f.read()
+        db_sess.commit()
+
+        return redirect('/profile')
+    else:
+        if current_user.image_data:
+            image = Image.open(BytesIO(current_user.image_data))
+            image.save('static/images/res.png')
+        try:
+            data = {
+                "name": current_user.name,
+                "surname": current_user.surname,
+                "phone_number": current_user.phone_number,
+                "email": current_user.email,
+            }
+        except AttributeError:
+            data = {}
+        return render_template('profile.html', title='Профиль', data=data)
 
 
 def main():
