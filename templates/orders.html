@@ -1,26 +1,18 @@
 {% extends "base.html" %}
 {% block content %}
 <link rel="stylesheet" href="static/css/orders_style.css">
-    <div class="card">
-      <div class="card-header">
-        Рекомендуемые
-      </div>
-      <div class="card-body">
-        <h5 class="card-title">Особое обращение с заголовком</h5>
-        <p class="card-text">С вспомогательным текстом ниже в качестве естественного перехода к дополнительному контенту.</p>
-        <a href="#" class="btn btn-primary">Перейти куда-нибудь</a>
-      </div>
-    </div>
 
-    <div class="card">
-      <div class="card-header">
-        Рекомендуемые
-      </div>
-      <div class="card-body">
-        <h5 class="card-title">Особое обращение с заголовком</h5>
-        <p class="card-text">С вспомогательным текстом ниже в качестве естественного перехода к дополнительному контенту.</p>
-        <a href="#" class="btn btn-primary">Перейти куда-нибудь</a>
-      </div>
-    </div>
+    {% for order, user in orders %}
+        <div class="card">
+          <div class="card-header">
+              {{ user.name }} {{ user.surname }}
+          </div>
+          <div class="card-body">
+            <h5 class="card-title">{{ order.title }}</h5>
+            <p class="card-text">{{ order.description }}</p>
+            <a href="/order/{{ order.id }}" class="btn btn-success">Откликнуться</a>
+          </div>
+        </div>
+    {% endfor %}
 
 {% endblock %}

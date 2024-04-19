@@ -5,6 +5,8 @@ from data import db_session
 from data.login_form import LoginForm
 from data.register_form import RegisterForm
 from data.users import User
+from data.orders import Orders
+from data.order_creation_form import OrdersCreationForm
 
 from PIL import Image, ImageDraw
 from io import BytesIO
@@ -89,10 +91,10 @@ def profile():
 
         return redirect('/profile')
     else:
-        if current_user.image_data:
-            image = Image.open(BytesIO(current_user.image_data))
-            image.save('static/images/res.png')
         try:
+            if current_user.image_data:
+                image = Image.open(BytesIO(current_user.image_data))
+                image.save('static/images/res.png')
             data = {
                 "name": current_user.name,
                 "surname": current_user.surname,
@@ -106,7 +108,25 @@ def profile():
 
 @app.route("/orders")
 def orders():
-    return render_template("orders.html", title="Заказы")
+    db_sess = db_session.create_session()
+    orders = db_sess.query(Orders, User).join(User, User.id == Orders.employer)
+    return render_template("orders.html", title="Заказы", orders=orders)
+
+
+@app.route("/create_order", methods=['GET', 'POST'])
+@login_required
+def create_order():
+    form = OrdersCreationForm()
+    if form.validate_on_submit():
+        db_sess = db_session.create_session()
+        order = Orders()
+        order.title = form.order_title.data
+        order.description = form.order_description.data
+        order.employer = current_user.id
+        db_sess.add(order)
+        db_sess.commit()
+        return redirect('/orders')
+    return render_template('create_order.html', title='Разместить заказ', form=form)
 
 
 def main():
