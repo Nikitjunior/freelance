@@ -33,7 +33,7 @@ def logout():
 
 @app.route("/")
 def index():
-    return render_template('base.html', title='TalentHarbor')
+    return render_template('main_page.html', title='TalentHarbor')
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -79,6 +79,7 @@ def reqister():
 
 
 @app.route('/profile', methods=['GET', 'POST'])
+@login_required
 def profile():
     if request.method == 'POST':
         f = request.files['file']
@@ -107,6 +108,7 @@ def profile():
 
 
 @app.route("/orders")
+@login_required
 def orders():
     db_sess = db_session.create_session()
     orders = db_sess.query(Orders, User).join(User, User.id == Orders.employer)

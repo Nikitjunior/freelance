@@ -13,14 +13,16 @@
             <div class="logo">
                 <a href="/"> <img src="static/images/logo2.png"> </a>
             </div>
-            <nav>
-                <ul>
-                    <li><a href="/profile">Профиль</a></li>
-                    <li><a href="/orders">Заказы</a></li>
-                    <li><a href="#">Принятые заказы</a></li>
-                    <li><a href="/create_order">Разместить заказ</a></li>
-                </ul>
-            </nav>
+            {% if current_user.is_authenticated %}
+                <nav>
+                    <ul>
+                        <li><a href="/profile">Профиль</a></li>
+                        <li><a href="/orders">Заказы</a></li>
+                        <li><a href="#">Принятые заказы</a></li>
+                        <li><a href="/create_order">Разместить заказ</a></li>
+                    </ul>
+                </nav>
+            {% endif %}
         </div>
     </header>
 

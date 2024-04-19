@@ -1,0 +1,35 @@
+.carousel-inner {
+    max-width: 1300px; /* Максимальная ширина контейнера карусели */
+    margin: auto; /* Центрирование карусели на странице */
+}
+
+
+/* Уменьшение размера карусели */
+.carousel-item img {
+    max-height: 700px; /* Максимальная высота изображения */
+}
+
+.carousel-caption {
+    background-color: rgba(0, 0, 0, 0.5); /* Прозрачный фон для подписи */
+    padding: 10px; /* Отступ внутри подписи */
+    border-radius: 5px; /* Закругленные углы подписи */
+}
+
+/* Стили для контролов карусели */
+.carousel-control-prev,
+.carousel-control-next {
+    width: 34%; /* Ширина контролов */
+
+}
+
+.carousel-control-prev-icon,
+.carousel-control-next-icon {
+    background-color: black; /* Цвет стрелок */
+}
+
+/* Стили для навигационных индикаторов */
+.carousel-indicators button {
+    background-color: black; /* Цвет активного индикатора */
+}
+
+
