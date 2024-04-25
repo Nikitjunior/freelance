@@ -13,6 +13,8 @@
             {% if current_user.id == order.employer %}
                 <a href="/edit_order/{{ order.id }}" class="btn btn-info">Редактировать</a>
                 <a href="/delete_order/{{ order.id }}" class="btn btn-danger">Удалить</a>
+            {% elif order.executor %}
+                <button type="button" class="btn btn-secondary">Кто-то уже взял этот заказ</button>
             {% else %}
                 <a href="/order/{{ order.id }}" class="btn btn-success">Откликнуться</a>
             {% endif %}

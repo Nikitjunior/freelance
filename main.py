@@ -188,6 +188,41 @@ def delete_order(id):
         abort(404)
 
 
+@app.route("/accepted_orders")
+@login_required
+def accepted_orders():
+    db_sess = db_session.create_session()
+    orders = db_sess.query(Orders).filter(Orders.executor == current_user.id).all()
+
+    formatted_orders = []
+    for order in orders:
+        employer_user = db_sess.query(User).filter(User.id == order.employer).first()
+        employer_fullname = f"{employer_user.surname} {employer_user.name}"
+        formatted_order = {
+            "id": order.id,
+            "title": order.title,
+            "description": order.description,
+            "executor": order.executor,
+            "employer": employer_fullname
+        }
+        formatted_orders.append(formatted_order)
+    return render_template("accepted_orders.html", title="Принятые заказы", orders=formatted_orders)
+
+
+@app.route("/deny_order/<id>")
+@login_required
+def deny_order(id):
+    db_sess = db_session.create_session()
+    order = db_sess.query(Orders).filter(Orders.id == id).first()
+    print(order)
+    if not order:
+        abort(404)
+    if current_user.id == order.executor:
+        order.executor = None
+        db_sess.commit()
+        return redirect("/orders")
+
+
 def main():
     db_session.global_init("db/freelance.db")
     app.run()

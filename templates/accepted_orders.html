@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block content %}
+<link rel="stylesheet" href="static/css/orders_style.css">
+    <h1>На этой страничке будут отображаться взятые вами заказы!</h1>
+    {% for order in orders %}
+        <div class="card">
+          <div class="card-header">
+              {{ order.employer }}
+          </div>
+          <div class="card-body">
+            <h5 class="card-title">{{ order.title }}</h5>
+            <p class="card-text">{{ order.description }}</p>
+            <a href="/deny_order/{{ order.id }}" class="btn btn-danger">Отказаться</a>
+          </div>
+        </div>
+    {% endfor %}
+
+{% endblock %}
