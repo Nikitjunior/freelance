@@ -1,4 +1,4 @@
-from flask import Flask, render_template, redirect, request
+from flask import Flask, render_template, redirect, request, abort
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user
 
 from data import db_session
@@ -128,10 +128,12 @@ def create_order():
         db_sess.add(order)
         db_sess.commit()
         return redirect('/orders')
-    return render_template('create_order.html', title='Разместить заказ', form=form)
+    return render_template('create_order.html', title='Разместить заказ', form=form,
+                           title2="Создать заказ")
 
 
 @app.route("/order/<id>", methods=['GET', 'POST'])
+@login_required
 def order(id):
     db_sess = db_session.create_session()
     order = db_sess.query(Orders).filter(Orders.id == id).first()
@@ -145,6 +147,45 @@ def order(id):
         "description": order.description
     }
     return render_template("accept_order.html", title="Откликнуться на заказ", data=data)
+
+
+@app.route("/edit_order/<id>", methods=['GET', 'POST'])
+@login_required
+def edit_order(id):
+    form = OrdersCreationForm()
+    form.submit.label.text = 'Изменить'
+    db_sess = db_session.create_session()
+    order = db_sess.query(Orders).filter(Orders.id == id).first()
+    if not order:
+        abort(404)
+    if current_user.id == order.employer:
+        if request.method == "GET":
+            form.order_title.data = order.title
+            form.description.data = order.description
+        if form.validate_on_submit():
+            order.title = form.order_title.data
+            order.description = form.description.data
+            db_sess.commit()
+            return redirect('/orders')
+    else:
+        abort(404)
+    return render_template("create_order.html", title="Редактировать заказ", form=form,
+                           title2="Редактировать заказ")
+
+
+@app.route("/delete_order/<id>")
+@login_required
+def delete_order(id):
+    db_sess = db_session.create_session()
+    order = db_sess.query(Orders).filter(Orders.id == id).first()
+    if not order:
+        abort(404)
+    if current_user.id == order.employer:
+        db_sess.delete(order)
+        db_sess.commit()
+        return redirect('/orders')
+    else:
+        abort(404)
 
 
 def main():
