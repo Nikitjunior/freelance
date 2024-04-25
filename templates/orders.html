@@ -10,7 +10,11 @@
           <div class="card-body">
             <h5 class="card-title">{{ order.title }}</h5>
             <p class="card-text">{{ order.description }}</p>
-            <a href="/order/{{ order.id }}" class="btn btn-success">Откликнуться</a>
+            {% if current_user.id == order.executor %}
+                  <button type="button" class="btn btn-info">Ваш заказ</button>
+            {% else %}
+                <a href="/order/{{ order.id }}" class="btn btn-success">Откликнуться</a>
+            {% endif %}
           </div>
         </div>
     {% endfor %}

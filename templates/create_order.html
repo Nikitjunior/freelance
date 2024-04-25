@@ -6,7 +6,7 @@
     {{ form.hidden_tag() }}
     <p>
         {{ form.order_title.label }}<br>
-        {{ form.order_title(class="form-control") }}<br>
+        {{ form.order_title(class="form-control", readonly=form.readonly) }}<br>
         {% for error in form.order_title.errors %}
             <p class="alert alert-danger" role="alert">
                 {{ error }}
@@ -14,9 +14,9 @@
         {% endfor %}
     </p>
     <p>
-        {{ form.order_description.label }}<br>
-        {{ form.order_description(class="form-control") }}<br>
-        {% for error in form.order_description.errors %}
+        {{ form.description.label }}
+        {{ form.description(class="form-control" ) }}<br>
+        {% for error in form.description.errors %}
             <p class="alert alert-danger" role="alert">
                 {{ error }}
             </p>

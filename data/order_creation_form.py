@@ -5,5 +5,6 @@ from wtforms.validators import DataRequired
 
 class OrdersCreationForm(FlaskForm):
     order_title = StringField('Заголовок заказа', validators=[DataRequired()])
-    order_description = TextAreaField("Описание заказа", validators=[DataRequired()])
+    description = TextAreaField("Описание заказа", validators=[DataRequired()])
     submit = SubmitField('Разместить')
+    readonly = False

@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block content %}
+    <form method="post">
+        <h1>Откликнуться на заказ</h1>
+        <p>
+            <label>Заголовок заказа</label>
+            <input class="form-control" type="text" value="{{ data.title }}" aria-label="пример ввода только для чтения" readonly>
+        </p>
+        <p>
+            <label>Описание заказа</label>
+            <input type="text" class="form-control" name="order_description" value="{{ data.description }}" readonly>
+        </p>
+        <input class="btn btn-success" style="margin-bottom: 10px" id="submit" name="submit" type="submit" value="Откликнуться">
+    </form>
+{% endblock %}

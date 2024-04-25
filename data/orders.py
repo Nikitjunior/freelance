@@ -11,9 +11,9 @@ class Orders(SqlAlchemyBase, UserMixin, SerializerMixin):
     id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True, autoincrement=True)
     title = sqlalchemy.Column(sqlalchemy.String)
     description = sqlalchemy.Column(sqlalchemy.String)
-
+    executor = sqlalchemy.Column(sqlalchemy.Integer)
     employer = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("users.id"))
     user = orm.relationship('User')
 
     def __repr__(self):
-        return f"<Order> {self.order_description}"
+        return f"<Order> {self.description}"

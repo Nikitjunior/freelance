@@ -8,7 +8,7 @@ from data.users import User
 from data.orders import Orders
 from data.order_creation_form import OrdersCreationForm
 
-from PIL import Image, ImageDraw
+from PIL import Image
 from io import BytesIO
 
 app = Flask(__name__)
@@ -123,12 +123,28 @@ def create_order():
         db_sess = db_session.create_session()
         order = Orders()
         order.title = form.order_title.data
-        order.description = form.order_description.data
+        order.description = form.description.data
         order.employer = current_user.id
         db_sess.add(order)
         db_sess.commit()
         return redirect('/orders')
     return render_template('create_order.html', title='Разместить заказ', form=form)
+
+
+@app.route("/order/<id>", methods=['GET', 'POST'])
+def order(id):
+    db_sess = db_session.create_session()
+    order = db_sess.query(Orders).filter(Orders.id == id).first()
+    if request.method == "POST":
+        order.executor = current_user.id
+        db_sess.commit()
+        return redirect('/accepted_orders')
+
+    data = {
+        "title": order.title,
+        "description": order.description
+    }
+    return render_template("accept_order.html", title="Откликнуться на заказ", data=data)
 
 
 def main():
