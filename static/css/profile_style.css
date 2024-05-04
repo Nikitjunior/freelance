@@ -7,3 +7,57 @@
     margin-left: 100px;
     margin-top: 50px;
 }
+
+.column-3{
+    margin-left: 100px;
+    margin-top: 50px
+}
+
+.stars{
+    background-color: red
+}
+
+#circle {
+    width: 60px;
+    height: 60px;
+    -webkit-border-radius: 50px;
+    -moz-border-radius: 50px;
+    border-radius: 50px;
+    background-color: #ffbb00;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 25px;
+    font-weight: bold;
+    }
+
+.rating{
+    display: flex;
+    width: 355px;
+    height: 75px;
+    -webkit-border-radius: 50px;
+    -moz-border-radius: 50px;
+    border-radius: 50px;
+    background-color: #2b2b2b;
+    justify-content: center;
+    align-items: center;
+
+}
+
+.star {
+    width: 50px;
+    height: 50px;
+    background: #ffbb00;
+    clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+    margin-left: 3px;
+}
+.star-grey {
+    width: 50px;
+    height: 50px;
+    background: #52575b;
+    clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+    margin-left: 3px;
+}
+
+
+

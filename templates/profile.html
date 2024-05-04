@@ -28,7 +28,25 @@
             <a class="btn btn-danger btn-lg" href="/logout">Выйти</a>
         </div>
     </div>
+    <div class='column-3'>
+        <h2>Рейтинг</h2>
+        <div class='rating'>
+            <div id="circle">{{ rating }}</div>
+            {% set full_stars = rating | round(0, 'floor') | int %}
+            {% if rating % 1 == 0.5 %}
+                {% set full_stars = full_stars + 1 %}
+            {% endif %}
+            {% set empty_stars = 5 - full_stars %}
 
+            {% for i in range(full_stars) %}
+                <div class="star"></div>
+            {% endfor %}
+
+            {% for i in range(empty_stars) %}
+                <div class="star-grey"></div>
+            {% endfor %}
+        </div>
+    </div>
 </div>
 
 {% endblock %}

@@ -18,6 +18,7 @@ class User(SqlAlchemyBase, UserMixin, SerializerMixin):
     email = sqlalchemy.Column(sqlalchemy.String, unique=True)
     phone_number = sqlalchemy.Column(sqlalchemy.String, unique=True)
     image_data = sqlalchemy.Column(sqlalchemy.LargeBinary)
+    rating = sqlalchemy.Column(sqlalchemy.String)
     hashed_password = sqlalchemy.Column(sqlalchemy.String)
 
     def __repr__(self):
@@ -28,3 +29,16 @@ class User(SqlAlchemyBase, UserMixin, SerializerMixin):
 
     def check_password(self, password):
         return check_password_hash(self.hashed_password, password)
+
+    def add_rating(self, raiting: int):
+        if self.rating:
+            self.rating += f", {raiting}"
+        else:
+            self.rating = str(raiting)
+
+    def get_rating(self):
+        if self.rating:
+            rating = list(map(int, self.rating.split(",")))
+            print(rating)
+            return round((sum(rating) / len(rating)), ndigits=1)
+        return 0

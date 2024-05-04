@@ -104,7 +104,9 @@ def profile():
             }
         except AttributeError:
             data = {}
-        return render_template('profile.html', title='Профиль', data=data)
+
+        rating = current_user.get_rating()
+        return render_template('profile.html', title='Профиль', data=data, rating=rating)
 
 
 @app.route("/orders")
