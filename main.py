@@ -1,4 +1,4 @@
-from flask import Flask, render_template, redirect, request, abort
+from flask import Flask, render_template, redirect, request, abort, jsonify
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user
 
 from data import db_session
@@ -236,6 +236,8 @@ def chat():
         if message:
             chat.add_message(current_user.id, message)
             db_sess.commit()
+        data = chat.get_messages()
+        return jsonify([{"user_id": msg['user_id'], "message": msg['message']} for msg in data])
 
     if current_user.id == chat.user1:
         user2 = db_sess.query(User).filter(User.id == chat.user2).first()

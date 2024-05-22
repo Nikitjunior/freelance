@@ -58,4 +58,64 @@
       </form>
     </section>
 </div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+  $(document).ready(function() {
+    $('.msger-inputarea').on('submit', function(event) {
+      event.preventDefault(); // Предотвращаем перезагрузку страницы
+      var message = $('.msger-input').val();
+      if (message.trim() === '') return; //
+
+      $.ajax({
+        url: '/chat',
+        type: 'POST',
+        data: {
+          message: message
+        },
+        success: function(response) {
+          $('.msger-input').val(''); // Очищаем поле ввода
+          updateChat(response); // Обновляем чат с новыми данными
+        },
+        error: function(error) {
+          console.log('Ошибка отправки сообщения:', error);
+        }
+      });
+    });
+
+    function updateChat(data) {
+      var chat = $('.msger-chat');
+      chat.html(''); // Очищаем текущие сообщения
+      data.forEach(function(message) {
+        var msgHTML = '';
+        if (message.user_id == {{ current_user.id }}) {
+          msgHTML = `<div class="msg right-msg">
+            <div class="msg-img" style="background-image: url(https://image.flaticon.com/icons/svg/145/145867.svg)"></div>
+            <div class="msg-bubble" style="background-color: #333">
+              <div class="msg-info">
+                <div class="msg-info-name">{{ current_user.name }}</div>
+                <div class="msg-info-time"></div>
+              </div>
+              <div class="msg-text">${message.message}</div>
+            </div>
+          </div>`;
+        } else {
+          msgHTML = `<div class="msg left-msg">
+            <div class="msg-img" style="background-image: url(https://image.flaticon.com/icons/svg/327/327779.svg)"></div>
+            <div class="msg-bubble" style="background-color: #808080">
+              <div class="msg-info">
+                <div class="msg-info-name">{{ user2.name }}</div>
+                <div class="msg-info-time"></div>
+              </div>
+              <div class="msg-text">${message.message}</div>
+            </div>
+          </div>`;
+        }
+        chat.append(msgHTML);
+      });
+      chat.scrollTop(chat[0].scrollHeight);
+    }
+  });
+</script>
+
 {% endblock %}
