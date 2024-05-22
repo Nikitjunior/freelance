@@ -1,7 +1,9 @@
 {% extends "base.html" %}
 {% block content %}
 <link rel="stylesheet" href="static/css/orders_style.css">
-    <h1>На этой страничке будут отображаться взятые вами заказы!</h1>
+    {% if not orders %}
+        <h1>На этой странице будут отображаться взятые вами заказы!</h1>
+    {% endif %}
     {% for order in orders %}
         <div class="card">
           <div class="card-header">

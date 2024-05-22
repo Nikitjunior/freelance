@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+
+{% block content %}
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/chat.css') }}">
+<div class="chat">
+    <section class="msger">
+      <header class="msger-header">
+        <div class="msger-header-title">
+          <i class="fas fa-comment-alt"></i> Чат
+        </div>
+        <div class="msger-header-options">
+          <span><i class="fas fa-cog"></i></span>
+        </div>
+      </header>
+
+      <main class="msger-chat">
+        {% for message in data %}
+          {% if current_user.id == message.user_id %}
+            <div class="msg right-msg">
+              <div
+               class="msg-img"
+               style="background-image: url(https://image.flaticon.com/icons/svg/145/145867.svg)">
+
+              </div>
+              <div class="msg-bubble" style="background-color: #333">
+                <div class="msg-info">
+                  <div class="msg-info-name">{{current_user.name}}</div>
+                  <div class="msg-info-time"></div>
+                </div>
+                <div class="msg-text">
+                  {{message.message}}
+                </div>
+              </div>
+            </div>
+          {% else %}
+           <div class="msg left-msg">
+            <div
+             class="msg-img"
+             style="background-image: url(https://image.flaticon.com/icons/svg/327/327779.svg)"
+            ></div>
+
+            <div class="msg-bubble" style="background-color: #808080">
+              <div class="msg-info">
+                <div class="msg-info-name">{{ user2.name }}</div>
+                <div class="msg-info-time"></div>
+              </div>
+              <div class="msg-text">
+                {{message.message}}
+              </div>
+            </div>
+           </div>
+           {% endif %}
+        {% endfor %}
+      </main>
+      <form class="msger-inputarea" method="post" action="">
+        <input type="text" name="message" class="msger-input" placeholder="Введите сообщение...">
+        <button type="submit" class="msger-send-btn">Отправить</button>
+      </form>
+    </section>
+</div>
+{% endblock %}

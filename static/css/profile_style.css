@@ -17,6 +17,12 @@
     background-color: red
 }
 
+.profile_image{
+    height: 300px;
+    width: 300px;
+    clip-path: circle(50% at 50% 50%);
+}
+
 #circle {
     width: 60px;
     height: 60px;

@@ -55,10 +55,12 @@
         <p>Присоединяйтесь к нам сегодня и начните свой путь к успеху!</p>
     </div>
 </section>
-<div style="display: flex; justify-content: center; margin-bottom: 10px">
-    <a href="/register"><button type="button" class="btn btn-dark" style="margin-right: 50px;">Работать с нами!</button></a>
-    <a href="/login"><button type="button" class="btn btn-outline-success">Войти</button></a>
-</div>
+{% if not current_user.is_authenticated %}
+    <div style="display: flex; justify-content: center; margin-bottom: 10px">
+        <a href="/register"><button type="button" class="btn btn-dark" style="margin-right: 50px;">Работать с нами!</button></a>
+        <a href="/login"><button type="button" class="btn btn-outline-success">Войти</button></a>
+    </div>
+{% endif %}
 
 
 {% endblock %}

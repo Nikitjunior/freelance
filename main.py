@@ -7,6 +7,7 @@ from data.register_form import RegisterForm
 from data.users import User
 from data.orders import Orders
 from data.order_creation_form import OrdersCreationForm
+from data.chat import Chat
 
 from PIL import Image
 from io import BytesIO
@@ -223,6 +224,26 @@ def deny_order(id):
         order.executor = None
         db_sess.commit()
         return redirect("/orders")
+
+
+@app.route("/chat", methods=['GET', 'POST'])
+def chat():
+    db_sess = db_session.create_session()
+    chat = db_sess.query(Chat).filter(Chat.id == 1).first()
+
+    if request.method == 'POST':
+        message = request.form.get('message')
+        if message:
+            chat.add_message(current_user.id, message)
+            db_sess.commit()
+
+    if current_user.id == chat.user1:
+        user2 = db_sess.query(User).filter(User.id == chat.user2).first()
+    else:
+        user2 = db_sess.query(User).filter(User.id == chat.user1).first()
+
+    data = chat.get_messages()
+    return render_template("chat.html", title="Чат", data=data, user2=user2)
 
 
 def main():
