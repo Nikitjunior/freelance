@@ -23,7 +23,7 @@ class Chat(SqlAlchemyBase, UserMixin, SerializerMixin):
         if self.messages:
             self.messages += f";&*!{user_id}:&*!{message}"
         else:
-            self.messages += f"{user_id}:*&!{message}"
+            self.messages += f"{user_id}:&*!{message}"
 
     def get_messages(self):
         raw_data = self.messages.split(";&*!")
