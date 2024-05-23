@@ -84,24 +84,23 @@ def reqister():
 def profile():
     if request.method == 'POST':
         f = request.files['file']
-
-        db_sess = db_session.create_session()
-        user_id = current_user.id
-        user = db_sess.query(User).get(user_id)
-        user.image_data = f.read()
-        db_sess.commit()
-
+        if f:
+            db_sess = db_session.create_session()
+            user = db_sess.query(User).get(current_user.id)
+            path = f'users_images/profile{current_user.id}.png'
+            f.save(f"static/{path}")
+            user.image = path
+            db_sess.commit()
         return redirect('/profile')
+
     else:
         try:
-            if current_user.image_data:
-                image = Image.open(BytesIO(current_user.image_data))
-                image.save('static/images/res.png')
             data = {
                 "name": current_user.name,
                 "surname": current_user.surname,
                 "phone_number": current_user.phone_number,
                 "email": current_user.email,
+                "image": current_user.image
             }
         except AttributeError:
             data = {}
@@ -227,6 +226,7 @@ def deny_order(id):
 
 
 @app.route("/chat", methods=['GET', 'POST'])
+@login_required
 def chat():
     db_sess = db_session.create_session()
     chat = db_sess.query(Chat).filter(Chat.id == 1).first()

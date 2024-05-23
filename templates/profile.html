@@ -5,11 +5,7 @@
     <div class='column-1'>
         <h1>Ваш профиль:</h1>
         <div class="profile_image">
-            {% if current_user.image_data %}
-            <img src="static/images/res.png" alt="" width='300' height="300">
-            {% else %}
-            <img src="static/images/profile.png" alt="" width='300' height="300">
-            {% endif %}
+            <img src="{{ url_for('static', filename=data.image) }}" alt="" width="300" height="300">
         </div>
         <form method="post" enctype="multipart/form-data">
             <div class="mb-3">

@@ -19,7 +19,7 @@
             <div class="msg right-msg">
               <div
                class="msg-img"
-               style="background-image: url(https://image.flaticon.com/icons/svg/145/145867.svg)">
+               style="background-image: url('{{ url_for('static', filename=current_user.image) }}');">
 
               </div>
               <div class="msg-bubble" style="background-color: #333">
@@ -36,7 +36,7 @@
            <div class="msg left-msg">
             <div
              class="msg-img"
-             style="background-image: url(https://image.flaticon.com/icons/svg/327/327779.svg)"
+             style="background-image: url('{{ url_for('static', filename=user2.image) }}');"
             ></div>
 
             <div class="msg-bubble" style="background-color: #808080">

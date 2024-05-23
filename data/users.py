@@ -17,7 +17,7 @@ class User(SqlAlchemyBase, UserMixin, SerializerMixin):
     speciality = sqlalchemy.Column(sqlalchemy.String)
     email = sqlalchemy.Column(sqlalchemy.String, unique=True)
     phone_number = sqlalchemy.Column(sqlalchemy.String, unique=True)
-    image_data = sqlalchemy.Column(sqlalchemy.LargeBinary)
+    image = sqlalchemy.Column(sqlalchemy.String, default='static/images/profile.png')
     rating = sqlalchemy.Column(sqlalchemy.String)
     hashed_password = sqlalchemy.Column(sqlalchemy.String)
 
