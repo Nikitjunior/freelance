@@ -2,7 +2,19 @@
 
 {% block content %}
 <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/chat.css') }}">
-<div class="chat">
+<div class="chat-container">
+  <div class="chat-list">
+    {% for chat in chats %}
+      <div class="chat-list-item">
+        <img src="{{ url_for('static', filename=chat.image) }}" alt="" class="chat-list-img">
+        <div class="chat-list-info">
+          <h5>{{ chat.name }}</h5>
+          <p>{{ chat.last_message_user }}: {{chat.last_message}}</p>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+  <div class="chat">
     <section class="msger">
       <header class="msger-header">
         <div class="msger-header-title">
@@ -57,6 +69,7 @@
         <button type="submit" class="msger-send-btn">Отправить</button>
       </form>
     </section>
+  </div>
 </div>
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>

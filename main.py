@@ -1,5 +1,6 @@
 from flask import Flask, render_template, redirect, request, abort, jsonify
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user
+from sqlalchemy import or_
 
 from data import db_session
 from data.login_form import LoginForm
@@ -17,6 +18,17 @@ app.config['SECRET_KEY'] = '12qasdj6'
 
 login_manager = LoginManager()
 login_manager.init_app(app)
+
+
+def get_second_user(chat_id: int) -> User:
+    db_sess = db_session.create_session()
+    chat = db_sess.query(Chat).filter(Chat.id == chat_id).first()
+
+    if current_user.id == chat.user1:
+        user2 = db_sess.query(User).filter(User.id == chat.user2).first()
+    else:
+        user2 = db_sess.query(User).filter(User.id == chat.user1).first()
+    return user2
 
 
 @login_manager.user_loader
@@ -216,7 +228,6 @@ def accepted_orders():
 def deny_order(id):
     db_sess = db_session.create_session()
     order = db_sess.query(Orders).filter(Orders.id == id).first()
-    print(order)
     if not order:
         abort(404)
     if current_user.id == order.executor:
@@ -239,13 +250,26 @@ def chat():
         data = chat.get_messages()
         return jsonify([{"user_id": msg['user_id'], "message": msg['message']} for msg in data])
 
-    if current_user.id == chat.user1:
-        user2 = db_sess.query(User).filter(User.id == chat.user2).first()
-    else:
-        user2 = db_sess.query(User).filter(User.id == chat.user1).first()
-
+    user2 = get_second_user(1)
     data = chat.get_messages()
-    return render_template("chat.html", title="Чат", data=data, user2=user2)
+
+    chats_preparing = db_sess.query(Chat).filter(or_(current_user.id == Chat.user1, current_user.id == Chat.user2)).all()
+    chats = []
+    for i in chats_preparing:
+        second_user = get_second_user(i.id)
+        if i.get_last_message()['user_id'] == current_user.id:
+            last_message_user = current_user.name
+        else:
+            last_message_user = second_user.name
+
+        chats.append({
+            "name": second_user.name,
+            "image": second_user.image,
+            "last_message_user": last_message_user,
+            "last_message": i.get_last_message()['message']
+        })
+
+    return render_template("chat.html", title="Чат", data=data, user2=user2, chats=chats)
 
 
 def main():

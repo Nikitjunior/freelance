@@ -17,7 +17,7 @@ class User(SqlAlchemyBase, UserMixin, SerializerMixin):
     speciality = sqlalchemy.Column(sqlalchemy.String)
     email = sqlalchemy.Column(sqlalchemy.String, unique=True)
     phone_number = sqlalchemy.Column(sqlalchemy.String, unique=True)
-    image = sqlalchemy.Column(sqlalchemy.String, default='static/images/profile.png')
+    image = sqlalchemy.Column(sqlalchemy.String, default='images/profile.png')
     rating = sqlalchemy.Column(sqlalchemy.String)
     hashed_password = sqlalchemy.Column(sqlalchemy.String)
 
@@ -27,7 +27,7 @@ class User(SqlAlchemyBase, UserMixin, SerializerMixin):
     def set_password(self, password):
         self.hashed_password = generate_password_hash(password)
 
-    def check_password(self, password):
+    def check_password(self, password) -> bool:
         return check_password_hash(self.hashed_password, password)
 
     def add_rating(self, raiting: int):
@@ -36,7 +36,7 @@ class User(SqlAlchemyBase, UserMixin, SerializerMixin):
         else:
             self.rating = str(raiting)
 
-    def get_rating(self):
+    def get_rating(self) -> float:
         if self.rating:
             rating = list(map(int, self.rating.split(",")))
             print(rating)
