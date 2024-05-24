@@ -79,127 +79,95 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
   $(document).ready(function() {
-    $('.msger-inputarea').on('submit', function(event) {
-      event.preventDefault(); // Предотвращаем перезагрузку страницы
-      var message = $('.msger-input').val();
-      if (message.trim() === '') return; //
+    function attachChatListClickEvent() {
+        $('.chat-list-item').off('click').on('click', function() {
+            var chatId = $(this).attr('id'); // Получаем ID нажатого элемента
+            $.ajax({
+                url: '/chat',
+                type: 'PUT',
+                data: { chat_id: chatId },
+                success: function(response) {
+                    updateChat(response.messages, response.user2);
+                },
+                error: function(error) {
+                    console.log('Ошибка:', error);
+                }
+            });
+        });
+    }
 
-      $.ajax({
-        url: '/chat',
-        type: 'POST',
-        data: {
-          message: message
-        },
-        success: function(response) {
-          $('.msger-input').val(''); // Очищаем поле ввода
-          updateChat(response.messages, response.user2); // Обновляем чат с новыми данными
-          updateChatList(response.chats); // Обновляем список чатов
-        },
-        error: function(error) {
-          console.log('Ошибка отправки сообщения:', error);
-        }
-      });
+    attachChatListClickEvent();
+
+    $('.msger-inputarea').on('submit', function(event) {
+        event.preventDefault(); // Предотвращаем перезагрузку страницы
+        var message = $('.msger-input').val();
+        if (message.trim() === '') return; // Проверяем на пустое сообщение
+
+        $.ajax({
+            url: '/chat',
+            type: 'POST',
+            data: {
+                message: message
+            },
+            success: function(response) {
+                $('.msger-input').val(''); // Очищаем поле ввода
+                updateChat(response.messages, response.user2); // Обновляем чат с новыми данными
+                updateChatList(response.chats); // Обновляем список чатов
+            },
+            error: function(error) {
+                console.log('Ошибка отправки сообщения:', error);
+            }
+        });
     });
 
     function updateChat(data, user2) {
-      var chat = $('.msger-chat');
-      chat.html(''); // Очищаем текущие сообщения
-      data.forEach(function(message) {
-        var msgHTML = '';
-        if (message.user_id == {{ current_user.id }}) {
-          msgHTML = `<div class="msg right-msg">
-            <div class="msg-img" style="background-image: url('{{ url_for('static', filename=current_user.image) }}')"></div>
-            <div class="msg-bubble" style="background-color: #333">
-              <div class="msg-info">
-                <div class="msg-info-name">{{ current_user.name }}</div>
-                <div class="msg-info-time"></div>
-              </div>
-              <div class="msg-text">${message.message}</div>
-            </div>
-          </div>`;
-        } else {
-          msgHTML = `<div class="msg left-msg">
-            <div class="msg-img" style="background-image: url('static/${user2.image}')"></div>
-            <div class="msg-bubble" style="background-color: #808080">
-              <div class="msg-info">
-                <div class="msg-info-name">${user2.name}</div>
-                <div class="msg-info-time"></div>
-              </div>
-              <div class="msg-text">${message.message}</div>
-            </div>
-          </div>`;
-        }
-        chat.append(msgHTML);
-      });
-      chat.scrollTop(chat[0].scrollHeight);
+        var chat = $('.msger-chat');
+        chat.html(''); // Очищаем текущие сообщения
+        data.forEach(function(message) {
+            var msgHTML = '';
+            if (message.user_id == {{ current_user.id }}) {
+                msgHTML = `<div class="msg right-msg">
+                    <div class="msg-img" style="background-image: url('{{ url_for('static', filename=current_user.image) }}')"></div>
+                    <div class="msg-bubble" style="background-color: #333">
+                        <div class="msg-info">
+                            <div class="msg-info-name">{{ current_user.name }}</div>
+                            <div class="msg-info-time"></div>
+                        </div>
+                        <div class="msg-text">${message.message}</div>
+                    </div>
+                </div>`;
+            } else {
+                msgHTML = `<div class="msg left-msg">
+                    <div class="msg-img" style="background-image: url('static/${user2.image}')"></div>
+                    <div class="msg-bubble" style="background-color: #808080">
+                        <div class="msg-info">
+                            <div class="msg-info-name">${user2.name}</div>
+                            <div class="msg-info-time"></div>
+                        </div>
+                        <div class="msg-text">${message.message}</div>
+                    </div>
+                </div>`;
+            }
+            chat.append(msgHTML);
+        });
+        chat.scrollTop(chat[0].scrollHeight);
     }
 
     function updateChatList(chats) {
-      var chatList = $('.chat-list');
-      chatList.html(''); // Очищаем текущий список чатов
-      chats.forEach(function(chat) {
-        var chatItemHTML = `<div class="chat-list-item">
-          <img src="static/${chat.image}" alt="" class="chat-list-img">
-          <div class="chat-list-info">
-            <h5>${chat.name}</h5>
-            <p>${chat.last_message_user}: ${chat.last_message}</p>
-          </div>
-        </div>`;
-        chatList.append(chatItemHTML);
-      });
+        var chatList = $('.chat-list');
+        chatList.html(''); // Очищаем текущий список чатов
+        chats.forEach(function(chat) {
+            var chatItemHTML = `<div class="chat-list-item" id="${chat.id}">
+                <img src="static/${chat.image}" alt="" class="chat-list-img">
+                <div class="chat-list-info">
+                    <h5>${chat.name}</h5>
+                    <p>${chat.last_message_user}: ${chat.last_message}</p>
+                </div>
+            </div>`;
+            chatList.append(chatItemHTML);
+        });
+        attachChatListClickEvent();
     }
-  });
-</script>
-<script>
-  $(document).ready(function() {
-  $('.chat-list-item').on('click', function() {
-    var chatId = $(this).attr('id'); // Получаем ID нажатого элемента
-    $.ajax({
-      url: '/chat',
-      type: 'PUT',
-      data: { chat_id: chatId },
-      success: function(response) {
-        updateChat(response.messages, response.user2);
-      },
-      error: function(error) {
-        console.log('Ошибка:', error);
-      }
-    });
-
-  });
-
-  function updateChat(data, user2) {
-    var chat = $('.msger-chat');
-    chat.html(''); // Очищаем текущие сообщения
-    data.forEach(function(message) {
-      var msgHTML = '';
-      if (message.user_id == {{ current_user.id }}) {
-        msgHTML = `<div class="msg right-msg">
-          <div class="msg-img" style="background-image: url('{{ url_for('static', filename=current_user.image) }}')"></div>
-          <div class="msg-bubble" style="background-color: #333">
-            <div class="msg-info">
-              <div class="msg-info-name">{{ current_user.name }}</div>
-              <div class="msg-info-time"></div>
-            </div>
-            <div class="msg-text">${message.message}</div>
-          </div>
-        </div>`;
-      } else {
-        msgHTML = `<div class="msg left-msg">
-          <div class="msg-img" style="background-image: url('static/${user2.image}')"></div>
-          <div class="msg-bubble" style="background-color: #808080">
-            <div class="msg-info">
-              <div class="msg-info-name">${user2.name}</div>
-              <div class="msg-info-time"></div>
-            </div>
-            <div class="msg-text">${message.message}</div>
-          </div>
-        </div>`;
-      }
-      chat.append(msgHTML);
-    });
-    chat.scrollTop(chat[0].scrollHeight);
-  }
 });
 </script>
 
