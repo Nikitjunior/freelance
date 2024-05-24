@@ -248,7 +248,27 @@ def chat():
             chat.add_message(current_user.id, message)
             db_sess.commit()
         data = chat.get_messages()
-        return jsonify([{"user_id": msg['user_id'], "message": msg['message']} for msg in data])
+
+        chats_preparing = db_sess.query(Chat).filter(or_(current_user.id == Chat.user1, current_user.id == Chat.user2)).all()
+        chats = []
+        for i in chats_preparing:
+            second_user = get_second_user(i.id)
+            if i.get_last_message()['user_id'] == current_user.id:
+                last_message_user = current_user.name
+            else:
+                last_message_user = second_user.name
+
+            chats.append({
+                "name": second_user.name,
+                "image": second_user.image,
+                "last_message_user": last_message_user,
+                "last_message": i.get_last_message()['message']
+            })
+
+        return jsonify({
+            "messages": [{"user_id": msg['user_id'], "message": msg['message']} for msg in data],
+            "chats": chats
+        })
 
     user2 = get_second_user(1)
     data = chat.get_messages()

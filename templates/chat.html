@@ -88,7 +88,8 @@
         },
         success: function(response) {
           $('.msger-input').val(''); // Очищаем поле ввода
-          updateChat(response); // Обновляем чат с новыми данными
+          updateChat(response.messages); // Обновляем чат с новыми данными
+          updateChatList(response.chats); // Обновляем список чатов
         },
         error: function(error) {
           console.log('Ошибка отправки сообщения:', error);
@@ -103,7 +104,7 @@
         var msgHTML = '';
         if (message.user_id == {{ current_user.id }}) {
           msgHTML = `<div class="msg right-msg">
-            <div class="msg-img" style="background-image: url(https://image.flaticon.com/icons/svg/145/145867.svg)"></div>
+            <div class="msg-img" style="background-image: url('{{ url_for('static', filename=current_user.image) }}')"></div>
             <div class="msg-bubble" style="background-color: #333">
               <div class="msg-info">
                 <div class="msg-info-name">{{ current_user.name }}</div>
@@ -114,7 +115,7 @@
           </div>`;
         } else {
           msgHTML = `<div class="msg left-msg">
-            <div class="msg-img" style="background-image: url(https://image.flaticon.com/icons/svg/327/327779.svg)"></div>
+            <div class="msg-img" style="background-image: url('{{ url_for('static', filename=user2.image) }}')"></div>
             <div class="msg-bubble" style="background-color: #808080">
               <div class="msg-info">
                 <div class="msg-info-name">{{ user2.name }}</div>
@@ -127,6 +128,22 @@
         chat.append(msgHTML);
       });
       chat.scrollTop(chat[0].scrollHeight);
+    }
+
+    function updateChatList(chats) {
+      var chatList = $('.chat-list');
+      chatList.html(''); // Очищаем текущий список чатов
+      chats.forEach(function(chat) {
+        console.log('Current chats array:', chat.image);
+        var chatItemHTML = `<div class="chat-list-item">
+          <img src="static/${chat.image}" alt="" class="chat-list-img">
+          <div class="chat-list-info">
+            <h5>${chat.name}</h5>
+            <p>${chat.last_message_user}: ${chat.last_message}</p>
+          </div>
+        </div>`;
+        chatList.append(chatItemHTML);
+      });
     }
   });
 </script>
