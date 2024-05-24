@@ -31,6 +31,30 @@ def get_second_user(chat_id: int) -> User:
     return user2
 
 
+def get_chats_list() -> list[dict]:
+    db_sess = db_session.create_session()
+    chats_preparing = db_sess.query(Chat).filter(
+        or_(current_user.id == Chat.user1, current_user.id == Chat.user2)
+    ).all()
+
+    chats = []
+    for i in chats_preparing:
+        second_user = get_second_user(i.id)
+        if i.get_last_message()['user_id'] == current_user.id:
+            last_message_user = current_user.name
+        else:
+            last_message_user = second_user.name
+
+        chats.append({
+            "id": i.id,
+            "name": second_user.name,
+            "image": second_user.image,
+            "last_message_user": last_message_user,
+            "last_message": i.get_last_message()['message']
+        })
+    return chats
+
+
 @login_manager.user_loader
 def load_user(user_id):
     db_sess = db_session.create_session()
@@ -236,11 +260,36 @@ def deny_order(id):
         return redirect("/orders")
 
 
-@app.route("/chat", methods=['GET', 'POST'])
+@app.route("/chat", methods=['GET', 'POST', 'PUT'])
 @login_required
 def chat():
     db_sess = db_session.create_session()
-    chat = db_sess.query(Chat).filter(Chat.id == 1).first()
+    chat = db_sess.query(Chat).filter(Chat.id == current_user.last_chat).first()
+
+    if request.method == "PUT":
+        chat_id = int(request.form.get('chat_id'))
+        chat = db_sess.query(Chat).filter(Chat.id == chat_id).first()
+
+        data = chat.get_messages()
+        user2 = get_second_user(chat_id)
+        data = chat.get_messages()
+        user = db_sess.query(User).filter(User.id == current_user.id).first()
+
+        user.last_chat = chat_id
+        db_sess.commit()
+
+        return jsonify({
+            "messages": [{"user_id": msg['user_id'], "message": msg['message']} for msg in data],
+            "user2": {
+                "id": user2.id,
+                "name": user2.name,
+                "image": user2.image
+            }
+        })
+
+    if not current_user.last_chat:
+        chats = get_chats_list()
+        return render_template("chat.html", title="Чат", data=None, user2=None, chats=chats)
 
     if request.method == 'POST':
         message = request.form.get('message')
@@ -249,45 +298,22 @@ def chat():
             db_sess.commit()
         data = chat.get_messages()
 
-        chats_preparing = db_sess.query(Chat).filter(or_(current_user.id == Chat.user1, current_user.id == Chat.user2)).all()
-        chats = []
-        for i in chats_preparing:
-            second_user = get_second_user(i.id)
-            if i.get_last_message()['user_id'] == current_user.id:
-                last_message_user = current_user.name
-            else:
-                last_message_user = second_user.name
-
-            chats.append({
-                "name": second_user.name,
-                "image": second_user.image,
-                "last_message_user": last_message_user,
-                "last_message": i.get_last_message()['message']
-            })
+        chats = get_chats_list()
+        user2 = get_second_user(chat.id)
 
         return jsonify({
             "messages": [{"user_id": msg['user_id'], "message": msg['message']} for msg in data],
-            "chats": chats
+            "chats": chats,
+            "user2": {
+                "id": user2.id,
+                "name": user2.name,
+                "image": user2.image
+            }
         })
 
-    user2 = get_second_user(1)
+    user2 = get_second_user(chat.id)
     data = chat.get_messages()
-
-    chats_preparing = db_sess.query(Chat).filter(or_(current_user.id == Chat.user1, current_user.id == Chat.user2)).all()
-    chats = []
-    for i in chats_preparing:
-        second_user = get_second_user(i.id)
-        if i.get_last_message()['user_id'] == current_user.id:
-            last_message_user = current_user.name
-        else:
-            last_message_user = second_user.name
-
-        chats.append({
-            "name": second_user.name,
-            "image": second_user.image,
-            "last_message_user": last_message_user,
-            "last_message": i.get_last_message()['message']
-        })
+    chats = get_chats_list()
 
     return render_template("chat.html", title="Чат", data=data, user2=user2, chats=chats)
 

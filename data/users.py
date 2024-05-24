@@ -19,6 +19,7 @@ class User(SqlAlchemyBase, UserMixin, SerializerMixin):
     phone_number = sqlalchemy.Column(sqlalchemy.String, unique=True)
     image = sqlalchemy.Column(sqlalchemy.String, default='images/profile.png')
     rating = sqlalchemy.Column(sqlalchemy.String)
+    last_chat = sqlalchemy.Column(sqlalchemy.Integer)
     hashed_password = sqlalchemy.Column(sqlalchemy.String)
 
     def __repr__(self):

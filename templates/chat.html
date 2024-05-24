@@ -5,7 +5,7 @@
 <div class="chat-container">
   <div class="chat-list">
     {% for chat in chats %}
-      <div class="chat-list-item">
+      <div class="chat-list-item" id="{{ chat.id }}">
         <img src="{{ url_for('static', filename=chat.image) }}" alt="" class="chat-list-img">
         <div class="chat-list-info">
           <h5>{{ chat.name }}</h5>
@@ -14,62 +14,66 @@
       </div>
     {% endfor %}
   </div>
-  <div class="chat">
-    <section class="msger">
-      <header class="msger-header">
-        <div class="msger-header-title">
-          <i class="fas fa-comment-alt"></i> Чат
-        </div>
-        <div class="msger-header-options">
-          <span><i class="fas fa-cog"></i></span>
-        </div>
-      </header>
+  {% if data %}
+    <div class="chat">
+      <section class="msger">
+        <header class="msger-header">
+          <div class="msger-header-title">
+            <i class="fas fa-comment-alt"></i> Чат
+          </div>
+          <div class="msger-header-options">
+            <span><i class="fas fa-cog"></i></span>
+          </div>
+        </header>
 
-      <main class="msger-chat">
-        {% for message in data %}
-          {% if current_user.id == message.user_id %}
-            <div class="msg right-msg">
+        <main class="msger-chat">
+          {% for message in data %}
+            {% if current_user.id == message.user_id %}
+              <div class="msg right-msg">
+                <div
+                 class="msg-img"
+                 style="background-image: url('{{ url_for('static', filename=current_user.image) }}');">
+
+                </div>
+                <div class="msg-bubble" style="background-color: #333">
+                  <div class="msg-info">
+                    <div class="msg-info-name">{{current_user.name}}</div>
+                    <div class="msg-info-time"></div>
+                  </div>
+                  <div class="msg-text">
+                    {{message.message}}
+                  </div>
+                </div>
+              </div>
+            {% else %}
+             <div class="msg left-msg">
               <div
                class="msg-img"
-               style="background-image: url('{{ url_for('static', filename=current_user.image) }}');">
+               style="background-image: url('{{ url_for('static', filename=user2.image) }}');"
+              ></div>
 
-              </div>
-              <div class="msg-bubble" style="background-color: #333">
+              <div class="msg-bubble" style="background-color: #808080">
                 <div class="msg-info">
-                  <div class="msg-info-name">{{current_user.name}}</div>
+                  <div class="msg-info-name">{{ user2.name }}</div>
                   <div class="msg-info-time"></div>
                 </div>
                 <div class="msg-text">
                   {{message.message}}
                 </div>
               </div>
-            </div>
-          {% else %}
-           <div class="msg left-msg">
-            <div
-             class="msg-img"
-             style="background-image: url('{{ url_for('static', filename=user2.image) }}');"
-            ></div>
-
-            <div class="msg-bubble" style="background-color: #808080">
-              <div class="msg-info">
-                <div class="msg-info-name">{{ user2.name }}</div>
-                <div class="msg-info-time"></div>
-              </div>
-              <div class="msg-text">
-                {{message.message}}
-              </div>
-            </div>
-           </div>
-           {% endif %}
-        {% endfor %}
-      </main>
-      <form class="msger-inputarea" method="post" action="">
-        <input type="text" name="message" class="msger-input" placeholder="Введите сообщение...">
-        <button type="submit" class="msger-send-btn">Отправить</button>
-      </form>
-    </section>
-  </div>
+             </div>
+             {% endif %}
+          {% endfor %}
+        </main>
+        <form class="msger-inputarea" method="post" action="">
+          <input type="text" name="message" class="msger-input" placeholder="Введите сообщение...">
+          <button type="submit" class="msger-send-btn">Отправить</button>
+        </form>
+      </section>
+    </div>
+  {% else %}
+    <div class="no-chats"></div>
+  {% endif %}
 </div>
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -88,7 +92,7 @@
         },
         success: function(response) {
           $('.msger-input').val(''); // Очищаем поле ввода
-          updateChat(response.messages); // Обновляем чат с новыми данными
+          updateChat(response.messages, response.user2); // Обновляем чат с новыми данными
           updateChatList(response.chats); // Обновляем список чатов
         },
         error: function(error) {
@@ -97,7 +101,7 @@
       });
     });
 
-    function updateChat(data) {
+    function updateChat(data, user2) {
       var chat = $('.msger-chat');
       chat.html(''); // Очищаем текущие сообщения
       data.forEach(function(message) {
@@ -115,10 +119,10 @@
           </div>`;
         } else {
           msgHTML = `<div class="msg left-msg">
-            <div class="msg-img" style="background-image: url('{{ url_for('static', filename=user2.image) }}')"></div>
+            <div class="msg-img" style="background-image: url('static/${user2.image}')"></div>
             <div class="msg-bubble" style="background-color: #808080">
               <div class="msg-info">
-                <div class="msg-info-name">{{ user2.name }}</div>
+                <div class="msg-info-name">${user2.name}</div>
                 <div class="msg-info-time"></div>
               </div>
               <div class="msg-text">${message.message}</div>
@@ -134,7 +138,6 @@
       var chatList = $('.chat-list');
       chatList.html(''); // Очищаем текущий список чатов
       chats.forEach(function(chat) {
-        console.log('Current chats array:', chat.image);
         var chatItemHTML = `<div class="chat-list-item">
           <img src="static/${chat.image}" alt="" class="chat-list-img">
           <div class="chat-list-info">
@@ -146,6 +149,58 @@
       });
     }
   });
+</script>
+<script>
+  $(document).ready(function() {
+  $('.chat-list-item').on('click', function() {
+    var chatId = $(this).attr('id'); // Получаем ID нажатого элемента
+    $.ajax({
+      url: '/chat',
+      type: 'PUT',
+      data: { chat_id: chatId },
+      success: function(response) {
+        updateChat(response.messages, response.user2);
+      },
+      error: function(error) {
+        console.log('Ошибка:', error);
+      }
+    });
+
+  });
+
+  function updateChat(data, user2) {
+    var chat = $('.msger-chat');
+    chat.html(''); // Очищаем текущие сообщения
+    data.forEach(function(message) {
+      var msgHTML = '';
+      if (message.user_id == {{ current_user.id }}) {
+        msgHTML = `<div class="msg right-msg">
+          <div class="msg-img" style="background-image: url('{{ url_for('static', filename=current_user.image) }}')"></div>
+          <div class="msg-bubble" style="background-color: #333">
+            <div class="msg-info">
+              <div class="msg-info-name">{{ current_user.name }}</div>
+              <div class="msg-info-time"></div>
+            </div>
+            <div class="msg-text">${message.message}</div>
+          </div>
+        </div>`;
+      } else {
+        msgHTML = `<div class="msg left-msg">
+          <div class="msg-img" style="background-image: url('static/${user2.image}')"></div>
+          <div class="msg-bubble" style="background-color: #808080">
+            <div class="msg-info">
+              <div class="msg-info-name">${user2.name}</div>
+              <div class="msg-info-time"></div>
+            </div>
+            <div class="msg-text">${message.message}</div>
+          </div>
+        </div>`;
+      }
+      chat.append(msgHTML);
+    });
+    chat.scrollTop(chat[0].scrollHeight);
+  }
+});
 </script>
 
 {% endblock %}
