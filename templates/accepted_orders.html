@@ -1,20 +1,22 @@
 {% extends "base.html" %}
 {% block content %}
-<link rel="stylesheet" href="static/css/orders_style.css">
-    {% if not orders %}
-        <h1>На этой странице будут отображаться взятые вами заказы!</h1>
-    {% endif %}
-    {% for order in orders %}
-        <div class="card">
-          <div class="card-header">
-              {{ order.employer }}
-          </div>
-          <div class="card-body">
-            <h5 class="card-title">{{ order.title }}</h5>
-            <p class="card-text">{{ order.description }}</p>
-            <a href="/deny_order/{{ order.id }}" class="btn btn-danger">Отказаться</a>
-          </div>
-        </div>
-    {% endfor %}
+<link rel="stylesheet" href="static/css/accepted_orders_style.css">
+    <div class="container">
+        {% if not orders %}
+                <h1>У вас нет принятых заказов.</h1>
+        {% endif %}
+        {% for order in orders %}
+            <div class="card">
+              <div class="card-header">
+                  {{ order.employer }}
+              </div>
+              <div class="card-body">
+                <h5 class="card-title">{{ order.title }}</h5>
+                <p class="card-text">{{ order.description }}</p>
+                <a href="/deny_order/{{ order.id }}" class="btn btn-danger">Отказаться</a>
+              </div>
+            </div>
+        {% endfor %}
+    </div>
 
 {% endblock %}

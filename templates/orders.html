@@ -1,25 +1,28 @@
 {% extends "base.html" %}
 {% block content %}
-<link rel="stylesheet" href="static/css/orders_style.css">
-
-    {% for order, user in orders %}
-        <div class="card">
-          <div class="card-header">
-              {{ user.name }} {{ user.surname }}
-          </div>
-          <div class="card-body">
-            <h5 class="card-title">{{ order.title }}</h5>
-            <p class="card-text">{{ order.description }}</p>
-            {% if current_user.id == order.employer %}
-                <a href="/edit_order/{{ order.id }}" class="btn btn-info">Редактировать</a>
-                <a href="/delete_order/{{ order.id }}" class="btn btn-danger">Удалить</a>
-            {% elif order.executor %}
-                <button type="button" class="btn btn-secondary">Кто-то уже взял этот заказ</button>
-            {% else %}
-                <a href="/order/{{ order.id }}" class="btn btn-success">Откликнуться</a>
-            {% endif %}
-          </div>
-        </div>
-    {% endfor %}
-
+    <link rel="stylesheet" href="static/css/orders_style.css">
+    <div class="container">
+        {% if not orders %}
+                <h1>Пока что здесь нет заказов :(</h1>
+        {% endif %}
+        {% for order, user in orders %}
+            <div class="card">
+              <div class="card-header">
+                  {{ user.name }} {{ user.surname }}
+              </div>
+              <div class="card-body">
+                <h5 class="card-title">{{ order.title }}</h5>
+                <p class="card-text">{{ order.description }}</p>
+                {% if current_user.id == order.employer %}
+                    <a href="/edit_order/{{ order.id }}" class="btn btn-info">Редактировать</a>
+                    <a href="/delete_order/{{ order.id }}" class="btn btn-danger">Удалить</a>
+                {% elif order.executor %}
+                    <button type="button" class="btn btn-secondary">Кто-то уже взял этот заказ</button>
+                {% else %}
+                    <a href="/order/{{ order.id }}" class="btn btn-success">Откликнуться</a>
+                {% endif %}
+              </div>
+            </div>
+        {% endfor %}
+    </div>
 {% endblock %}

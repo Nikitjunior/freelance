@@ -149,7 +149,7 @@ def profile():
 @login_required
 def orders():
     db_sess = db_session.create_session()
-    orders = db_sess.query(Orders, User).join(User, User.id == Orders.employer)
+    orders = db_sess.query(Orders, User).join(User, User.id == Orders.employer).all()
     return render_template("orders.html", title="Заказы", orders=orders)
 
 

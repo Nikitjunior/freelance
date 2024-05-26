@@ -1,12 +1,13 @@
-.card{
-    margin-top: 20px;
-    margin-bottom: 20px;
-}
 .container {
     margin-left: 10vw;
     margin-right: 10vw;
     height: 85vh;
     justify-content: center;
+
+}
+.card{
+    margin-top: 20px;
+    margin-bottom: 20px;
 }
 
 .container h1 {
