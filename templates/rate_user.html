@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container" style="height: 85vh">
+    <h1>Оцените пользователя</h1>
+    <form action="" method="post">
+        {{ form.hidden_tag() }}
+            <p>
+                <label>Имя</label>
+                <input class="form-control" type="text" value="{{ name }}" aria-label="" readonly>
+            </p>
+            <p>
+                {{ form.rate.label }}<br>
+                {{ form.rate(class="form-control", type="rate") }}<br>
+                {% for error in form.rate.errors %}
+                    <p class="alert alert-danger" role="alert">
+                        {{ error }}
+                    </p>
+                {% endfor %}
+            </p>
+            <p>{{ form.submit(type="submit", class="btn btn-primary") }}</p>
+            {{message}}
+    </form>
+</div>
+
+
+{% endblock %}

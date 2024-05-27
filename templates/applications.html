@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block content %}
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/applications_style.css') }}">
+    <div class="container">
+        {% if not data%}
+            <h1>У вас нет никаких заявок.</h1>
+        {% endif %}
+        {% for application in data %}
+            <div class="card">
+              <div class="card-header">
+                  {% if application.type == 'start' %}
+                    {{application.user.name}} {{application.user.surname}} хочет откликнуться на следующий заказ:
+                  {% elif application.type == 'done' %}
+                    {{application.user.name}} {{application.user.surname}} выполнил следующий заказ:
+                  {% endif %}
+              </div>
+              <div class="card-body">
+                <h5 class="card-title">{{application.order.title}}</h5>
+                <p class="card-text">{{application.order.description}}</p>
+                <div class="card-buttons">
+                    {% if application.type == 'start' %}
+                        <a href="reaction_accept/{{application.id}}" class="btn btn-success">Разрешить</a>
+                        <a href="reaction_reject/{{application.id}}" class="btn btn-danger">Отклонить</a>
+                    {% elif application.type == 'done' %}
+                        <a href="reaction_accept/{{application.id}}" class="btn btn-success">Подтвердить</a>
+                        <a href="reaction_reject/{{application.id}}" class="btn btn-danger">Отклонить</a>
+                    {% endif %}
+                    <button type="button" class="btn btn-info">Посмотреть профиль</button>
+                </div>
+              </div>
+            </div>
+        {% endfor %}
+    </div>
+{% endblock %}

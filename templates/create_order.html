@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% block content %}
 
-<link rel="stylesheet" href="static/css/create_order_style.css">
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/create_order_style.css') }}">
 <div class="container">
     <h1>{{ title2 }}</h1>
     <form action="" method="post">

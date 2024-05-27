@@ -1,0 +1,21 @@
+.container {
+    margin-left: 10vw;
+    margin-right: 10vw;
+    height: 85vh;
+    justify-content: center;
+}
+
+.container h1 {
+     text-align: center
+}
+
+.card{
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+
+.card-buttons {
+    display: flex;
+    gap: 10px
+}

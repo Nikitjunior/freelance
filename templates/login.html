@@ -2,6 +2,7 @@
 {% extends "base.html" %}
 
 {% block content %}
+<div class="container" style="height: 85vh">
     <h1>Авторизация</h1>
     <form action="" method="post">
         {{ form.hidden_tag() }}
@@ -27,4 +28,5 @@
         <p>{{ form.submit(type="submit", class="btn btn-primary") }}</p>
         <div>{{ message }}</div>
     </form>
+</div>
 {% endblock %}

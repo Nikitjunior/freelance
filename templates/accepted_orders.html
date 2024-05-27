@@ -3,7 +3,7 @@
 <link rel="stylesheet" href="static/css/accepted_orders_style.css">
     <div class="container">
         {% if not orders %}
-                <h1>У вас нет принятых заказов.</h1>
+            <h1>У вас нет принятых заказов.</h1>
         {% endif %}
         {% for order in orders %}
             <div class="card">
@@ -13,7 +13,11 @@
               <div class="card-body">
                 <h5 class="card-title">{{ order.title }}</h5>
                 <p class="card-text">{{ order.description }}</p>
-                <a href="/deny_order/{{ order.id }}" class="btn btn-danger">Отказаться</a>
+                <div class="button-container">
+                    <a href="/deny_order/{{ order.id }}" class="btn btn-danger">Отказаться</a>
+                    <a href="/order_complete/{{ order.id }}" class="btn btn-success">Сдать саказ</a>
+                </div>
+
               </div>
             </div>
         {% endfor %}

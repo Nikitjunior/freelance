@@ -9,6 +9,8 @@ from data.users import User
 from data.orders import Orders
 from data.order_creation_form import OrdersCreationForm
 from data.chat import Chat
+from data.applications import Applications
+from data.rate_form import RateForm
 
 from PIL import Image
 from io import BytesIO
@@ -176,9 +178,15 @@ def order(id):
     db_sess = db_session.create_session()
     order = db_sess.query(Orders).filter(Orders.id == id).first()
     if request.method == "POST":
-        order.executor = current_user.id
+        application = Applications(
+            sender=current_user.id,
+            recipient=order.employer,
+            order=order.id,
+            type="start"
+        )
+        db_sess.add(application)
         db_sess.commit()
-        return redirect('/accepted_orders')
+        return redirect('/orders')
 
     data = {
         "title": order.title,
@@ -311,11 +319,105 @@ def chat():
             }
         })
 
-    user2 = get_second_user(chat.id)
-    data = chat.get_messages()
+    if chat:
+        user2 = get_second_user(chat.id)
+        data = chat.get_messages()
+    else:
+        data = None
+        user2 = None
     chats = get_chats_list()
 
     return render_template("chat.html", title="Чат", data=data, user2=user2, chats=chats)
+
+
+@app.route("/applications", methods=['GET'])
+@login_required
+def applications():
+    db_sess = db_session.create_session()
+    applics = db_sess.query(Applications).filter(Applications.recipient == current_user.id).all()
+
+    data = [{
+        "id": i.id,
+        "user": db_sess.query(User).filter(User.id == i.sender).one(),
+        "order": db_sess.query(Orders).filter(Orders.id == i.order).one(),
+        "type": i.type
+    } for i in applics]
+
+    return render_template("applications.html", title="Заявки", data=data)
+
+
+@app.route("/reaction_accept/<application_id>")
+@login_required
+def reaction_accept(application_id):
+    db_sess = db_session.create_session()
+    application = db_sess.query(Applications).filter(Applications.id == application_id).first()
+    if application.type == 'start':
+        order = db_sess.query(Orders).filter(Orders.id == application.order).first()
+        if order.executor:
+            return redirect('/applications')
+        order.executor = application.sender
+        chat = Chat(
+            user1=application.sender,
+            user2=current_user.id
+        )
+        db_sess.add(chat)
+        db_sess.delete(application)
+        db_sess.commit()
+        return redirect('/applications')
+    elif application.type == 'done':
+        order = db_sess.query(Orders).filter(Orders.id == application.order).first()
+        db_sess.delete(order)
+        db_sess.delete(application)
+        db_sess.commit()
+        return redirect(f"/rate_user/{order.executor}")
+
+
+@app.route("/reaction_reject/<application_id>")
+@login_required
+def reaction_reject(application_id):
+    db_sess = db_session.create_session()
+    application = db_sess.query(Applications).filter(Applications.id == application_id).first()
+    db_sess.delete(application)
+    db_sess.commit()
+    return redirect('/applications')
+
+
+@app.route("/my_orders")
+@login_required
+def my_ordes():
+    db_sess = db_session.create_session()
+    orders = db_sess.query(Orders, User).join(User, User.id == Orders.employer).filter(
+        Orders.employer == current_user.id).all()
+    return render_template("orders.html", title="Мои заказы", orders=orders)
+
+
+@app.route("/order_complete/<order_id>")
+@login_required
+def order_complete(order_id):
+    db_sess = db_session.create_session()
+    order = db_sess.query(Orders).filter(Orders.id == order_id).first()
+    application = Applications(
+        sender=current_user.id,
+        recipient=order.employer,
+        order=order_id,
+        type='done'
+    )
+    db_sess.add(application)
+    db_sess.commit()
+    return redirect("/accepted_orders")
+
+
+@app.route('/rate_user/<user_id>', methods=['GET', 'POST'])
+@login_required
+def rate_user(user_id):
+    db_sess = db_session.create_session()
+    form = RateForm()
+    user = db_sess.query(User).filter(User.id == user_id).first()
+    if form.validate_on_submit():
+        user.add_rating(form.rate.data)
+        db_sess.commit()
+        return redirect('/applications')
+    return render_template("rate_user.html", title='Оценить пользователя', form=form, name=user.name)
 
 
 def main():

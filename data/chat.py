@@ -23,20 +23,24 @@ class Chat(SqlAlchemyBase, UserMixin, SerializerMixin):
         if self.messages:
             self.messages += f";&*!{user_id}:&*!{message}"
         else:
-            self.messages += f"{user_id}:&*!{message}"
+            self.messages = f"{user_id}:&*!{message}"
 
     def get_messages(self) -> list[dict]:
-        raw_data = self.messages.split(";&*!")
-        data = []
-        for i in raw_data:
-            i = i.split(":&*!")
-            dialog = {}
-            dialog['user_id'] = int(i[0])
-            dialog['message'] = i[1]
-            data.append(dialog)
-        return data
+        if self.messages:
+            raw_data = self.messages.split(";&*!")
+            data = []
+            for i in raw_data:
+                i = i.split(":&*!")
+                dialog = {}
+                dialog['user_id'] = int(i[0])
+                dialog['message'] = i[1]
+                data.append(dialog)
+            return data
+        return [{}]
 
     def get_last_message(self) -> dict:
-        raw_data = self.messages.split(";&*!")[-1]
-        data = raw_data.split(":&*!")
-        return {"user_id": int(data[0]), "message": data[1]}
+        if self.messages:
+            raw_data = self.messages.split(";&*!")[-1]
+            data = raw_data.split(":&*!")
+            return {"user_id": int(data[0]), "message": data[1]}
+        return {"user_id": None, "message": ''}
